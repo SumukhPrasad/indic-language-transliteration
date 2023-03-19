@@ -1,0 +1,11 @@
+{
+  "name": "indic-language-transliterator",
+  "version": "0.0.1",
+  "description": "Transliteration engine ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sumukh Prasad",
+  "license": "ISC"
+}
