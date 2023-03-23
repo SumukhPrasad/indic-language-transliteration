@@ -34,9 +34,9 @@ class ILTEngine {
 	 * @param {String} from Map from this scheme
 	 * @returns {Object}
 	 */
-	_createSchemeTrie(target, from) {
-		const targetScheme = this.schemes[target];
+	_createSchemeTrie(from, target) {
 		const fromScheme = this.schemes[from];
+		const targetScheme = this.schemes[target];
 		const alternates = fromScheme["alternates"] || {};
 
 		const letters = {};
@@ -100,8 +100,79 @@ class ILTEngine {
 			letters,
 			marks,
 			accents,
-			consonants
+			consonants,
+			from,
+			target
 		};
+	}
+
+	/**
+	 * Transliterate from a Brahmic script.
+	 * 
+	 * @param {String} data data to transliterate
+	 * @param {Object} map Map object from _makeMap
+	 * @param {Object} _opts Options
+	 */
+	_transliterateFromBrahmic(data, map, _opts) {
+		const consonants = map.consonants;
+		const letters = map.letters;
+		const marks = map.marks;
+		const isToRoman = map.targetRoman;
+		const targetScheme = this.schemes[map.target];
+		const transliterationPauseMarker = '%';
+
+
+		var hadRomanConsonant = false;
+		var buf = [];
+		var transliterationEnabled = true;
+		let danglingPauseMarker = false;
+		let temp;
+		
+		for (let i = 0, L; (L = data.charAt(i)); i++) {
+			if (L === transliterationPauseMarker) {
+				if (danglingPauseMarker) {
+				    transliterationEnabled = !transliterationEnabled;
+				    danglingPauseMarker = false;
+				} else {
+				    danglingPauseMarker = true;
+				}
+				if (hadRomanConsonant) {
+					buf.push(targetScheme.vowels[0]);
+					hadRomanConsonant = false;
+				}
+				continue;
+			} else if (!transliterationEnabled) {
+				buf.push(L);
+				continue;
+			}
+
+
+			if ((temp = marks[L]) !== undefined) {
+				buf.push(temp);
+				hadRomanConsonant = false;
+			} else {
+				if (danglingPauseMarker) {
+					buf.push(transliterationPauseMarker);
+				}
+				if (hadRomanConsonant) {
+					buf.push(targetScheme.vowels[0]);
+					hadRomanConsonant = false;
+				}
+
+				// Push the transliterated letter if possible. Otherwise, push the letter itself.
+				if ((temp = letters[L])) {
+					buf.push(temp);
+					hadRomanConsonant = isToRoman && (L in consonants);
+				} else {
+					buf.push(L);
+				}
+			}
+		}
+		if (hadRomanConsonant) {
+			buf.push(targetScheme.vowels[0]);
+			hadRomanConsonant = false;
+		}
+		return buf.join('');
 	}
 	
 

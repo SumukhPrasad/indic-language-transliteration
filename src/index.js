@@ -57,6 +57,16 @@ sampleScheme2 = {
 }
 
 var engine = new ILTEngine();
-engine._loadScheme("sample", sampleScheme)
-engine._loadScheme("sample2", sampleScheme2)
-console.log(engine._createSchemeTrie('sample2', 'sample'))
+engine._loadScheme('devnag', sampleScheme);
+engine._loadScheme('itrans', sampleScheme2, true)
+
+
+var map = engine._createSchemeTrie('devnag', 'itrans')
+//console.log(map);
+console.log("Please ignore the haphazard devanagari, monospaced fonts don't fare will with Indic scripts.")
+console.log('---------------\n')
+
+var testData = 'अस्तु';
+console.log(testData + " -> " + engine._transliterateFromBrahmic(testData, map, {}))
+
+
