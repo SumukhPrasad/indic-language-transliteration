@@ -61,12 +61,12 @@ engine._loadScheme('devnag', sampleScheme);
 engine._loadScheme('itrans', sampleScheme2, true)
 
 
-var map = engine._createSchemeTrie('devnag', 'itrans')
+var map = engine._createSchemeTrie('itrans', 'devnag')
 //console.log(map);
 console.log("Please ignore the haphazard devanagari, monospaced fonts don't fare will with Indic scripts.")
 console.log('---------------\n')
 
-var testData = 'अस्तु';
-console.log(testData + " -> " + engine._transliterateFromBrahmic(testData, map, {}))
+var testData = 'astu bho etat samyak eva bhavati| praataraashaaya kiM khaaditavaan?';
+console.log(testData + " -> " + engine._transliterateFromRoman(testData, map))
 
 

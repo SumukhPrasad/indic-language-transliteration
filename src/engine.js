@@ -38,7 +38,7 @@ class ILTEngine {
 		const fromScheme = this.schemes[from];
 		const targetScheme = this.schemes[target];
 		const alternates = fromScheme["alternates"] || {};
-
+		const tokenLengths = [];
 		const letters = {};
 		const consonants = {};
 		const marks = {};
@@ -63,6 +63,11 @@ class ILTEngine {
 				const alts = alternates[f] || [];
 				const numAlts = alts.length;
 				let j = 0;
+
+				tokenLengths.push(f.length);
+				for (j = 0; j < numAlts; j++) {
+					tokenLengths.push(alts[j].length);
+				}
 
 				if (cluster === 'maatraas' || cluster === 'viraama') {
 					marks[f] = t;
@@ -97,6 +102,10 @@ class ILTEngine {
 			consonants,
 			fromRoman: fromScheme.isRoman,
 			targetRoman: targetScheme.isRoman,
+			maxTokenLength : Math.max.apply(Math, tokenLengths),
+			viraama: targetScheme.viraama[0],
+			toSchemeA : targetScheme.vowels[0],
+			fromSchemeA : fromScheme.vowels[0],
 			letters,
 			marks,
 			accents,
@@ -111,9 +120,8 @@ class ILTEngine {
 	 * 
 	 * @param {String} data data to transliterate
 	 * @param {Object} map Map object from _makeMap
-	 * @param {Object} _opts Options
 	 */
-	_transliterateFromBrahmic(data, map, _opts) {
+	_transliterateFromBrahmic(data, map) {
 		const consonants = map.consonants;
 		const letters = map.letters;
 		const marks = map.marks;
@@ -174,8 +182,91 @@ class ILTEngine {
 		}
 		return buf.join('');
 	}
-	
 
+	/**
+	 * Transliterate from Roman schemes
+	 * 
+	 * @param {String} data data to transliterate
+	 * @param {Object} map Map object from _makeMap
+	 */
+	_transliterateFromRoman(data, map) {
+		const letters = map.letters;
+		const consonants = map.consonants;
+		const isToRoman = map.targetRoman;
+		const marks = map.marks;
+		const viraama = map.viraama;
+		const maxTokenLength = map.maxTokenLength;
+		const dataLength = data.length;
+
+		var buf = [];
+		let hadConsonant = false;
+		let tempLetter;
+		let tempMark;
+		let tokenBuffer = "";
+
+		let skippingTrans = false;
+		let toggledTrans = false;
+
+		for (let i = 0, L; (L = data.charAt(i)) || tokenBuffer; i++) {
+			// Fill the token buffer, if possible.
+			const difference = maxTokenLength - tokenBuffer.length;
+			if (difference > 0 && i < dataLength) {
+				tokenBuffer += L;
+				if (difference > 1) {
+					continue;
+				}
+			}
+
+			for (let j = 0; j < maxTokenLength; j++) {
+				const token = tokenBuffer.substring(0, maxTokenLength - j);
+
+				if (token === "#") {
+					toggledTrans = !toggledTrans;
+					tokenBuffer = tokenBuffer.substring(2);
+					break;
+				}
+				skippingTrans = toggledTrans;
+				if ((tempLetter = letters[token]) !== undefined && !skippingTrans) {
+					if (isToRoman) {
+						buf.push(tempLetter);
+					} else {
+						// Handle the implicit vowel. Ignore 'a' and force
+						// vowels to appear as marks if we've just seen a
+						// consonant.
+						if (hadConsonant) {
+							if ((tempMark = marks[token])) {
+								buf.push(tempMark);
+							} else if (token !== map.fromSchemeA) {
+								buf.push(viraama);
+								buf.push(tempLetter);
+							}
+						} else {
+							buf.push(tempLetter);
+						}
+						hadConsonant = token in consonants;
+					}
+					tokenBuffer = tokenBuffer.substring(maxTokenLength - j);
+					break;
+				} else if (j === maxTokenLength - 1) {
+					if (hadConsonant) {
+						hadConsonant = false;
+						if (!this._prefs.viraamaOmission) {
+							buf.push(viraama);
+						}
+					}
+					buf.push(token);
+					tokenBuffer = tokenBuffer.substring(1);
+				}
+			}
+
+		}
+		if (hadConsonant && !this._prefs.viraamaOmission) {
+			buf.push(viraama);
+		}
+		let result = buf.join("");
+
+		return result;
+	}
 }
 
 module.exports = {ILTEngine}
