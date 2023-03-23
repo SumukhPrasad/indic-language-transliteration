@@ -267,6 +267,20 @@ class ILTEngine {
 
 		return result;
 	}
+
+	/**
+	 * Transliterate.
+	 * @param {String} data data to transliterate
+	 * @param {String} from Transliterate from this scheme...
+	 * @param {String} target ... into this scheme.
+	 */
+	autoTransliterate(data, from, target) {
+		const map = this._createSchemeTrie(from, target);
+		var result = this.schemes[from].isRoman ? this._transliterateFromRoman(data, map) : this._transliterateFromBrahmic(data, map);
+		return result;
+	}
+
+	
 }
 
 module.exports = {ILTEngine}
