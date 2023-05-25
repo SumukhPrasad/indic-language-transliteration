@@ -1,3 +1,4 @@
+isRoman = false;
 scheme = {
 	vowels: [
 	  'a',  'ā', 'i', 'ī',
@@ -29,4 +30,4 @@ scheme = {
 	]
 }
 
-module.exports = {scheme};
+module.exports = {scheme, isRoman};

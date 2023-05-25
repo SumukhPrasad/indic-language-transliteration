@@ -1,3 +1,4 @@
+isRoman = true;
 scheme = {
 	vowels: [ "a", "A", "i", "I", "u", "U", "RRi", "RRI", "LLi", "LLI", "", "e", "ai", "", "o", "au" ],
 	maatraas: [ "A", "i", "I", "u", "U", "RRi", "RRI", "LLi", "LLI", "", "e", "ai", "", "o", "au" ],
@@ -40,4 +41,4 @@ scheme = {
 	 }
 }
 
-module.exports = {scheme};
+module.exports = {scheme, isRoman};

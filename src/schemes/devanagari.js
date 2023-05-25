@@ -1,3 +1,4 @@
+isRoman = false;
 scheme = {
 	vowels: [ 'अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ॠ', 'ऌ', 'ॡ', 'ऎ', 'ए', 'ऐ', 'ऒ', 'ओ', 'औ' ],
 	maatraas: [ 'ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'ॄ',  'ॢ',  'ॣ',  'ॆ', 'े', 'ै', 'ॊ', 'ो', 'ौ' ],
@@ -13,4 +14,4 @@ scheme = {
 	miscconsonants: [ 'क़', 'ख़', 'ग़', 'ज़', 'ड़', 'ढ़', 'फ़', 'य़', 'ऱ' ]
 }
 
-module.exports = {scheme};
+module.exports = {scheme, isRoman};
