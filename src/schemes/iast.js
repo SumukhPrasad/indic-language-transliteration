@@ -1,4 +1,4 @@
-isRoman = false;
+isRoman = true;
 scheme = {
 	vowels: [
 	  'a',  'ā', 'i', 'ī',
