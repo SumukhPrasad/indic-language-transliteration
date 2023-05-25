@@ -20,13 +20,13 @@ scheme = {
 	  '.t', '.th', '.d', '.dh', '.n',
 	  't',  'th',  'd',  'dh',  'n',
 	  'p',  'ph',  'b',  'bh',  'm',
-	  'y',  'r',   'l',  'v',   '~s', // Some velthuis programs may require "s instead of ~s
+	  'y',  'r',   'l',  'v',   '"s',
 	  '.s', 's',   'h',  '"d'
 	],
 	numbersAndPunctuation: [
 	  '0', '1',  '2',  '3',
 	  '4', '5',  '6',  '7',
-	  '8', '9',  '.o', "'",
+	  '8', '9',  '.o', ".a",
 	  '|', '||'
 	]
    }
